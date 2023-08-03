@@ -7,13 +7,15 @@ st.title("Super AP")
 labelGuideReg = "Guide réglementaire du scoutisme"
 labelBalise = "Balises"
 labelGPS = "GPS"
+labelHygieneAcm="Guide des bonnes pratiques de l'hygiène de la restauration en ACM"
 
 #Refs des pdf
 pdfGuideReg = "d4d373cf-4da4-4420-9038-9956e2cac86d"
 pdfBalises = "10c283bf-524c-4553-9681-83934b8c9cbd"
 pdfGps = "0d7d338b-4415-4772-99f2-31a98326f5bb"
+pdfHygieneAcm= "61488718-29cc-4cd7-a9e7-89465dce0241"
 
-listSourceInfo = [labelGuideReg, labelGPS, labelBalise]
+listSourceInfo = [labelGuideReg, labelGPS, labelBalise,labelHygieneAcm]
 sourceInfo = st.multiselect("Interlocuteurs", listSourceInfo, listSourceInfo)
 
 
@@ -34,6 +36,8 @@ def askQuestion(question, sourceInfo):
         uuidPdf = pdfGps
     elif sourceInfo == labelBalise:
         uuidPdf = pdfBalises
+    elif sourceInfo == labelHygieneAcm:
+        uuidPdf = pdfHygieneAcm
 
     with st.spinner(text=sourceInfo + " est en train d'écrire ..."):
         response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
