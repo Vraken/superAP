@@ -25,7 +25,6 @@ def askQuestion(question, sourceInfo):
     elif sourceInfo == "GPS":
         uuidPdf = pdfBalises
 
-    history.append(question)
     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
                             headers={
                                 "authority": "reederproduction.uk.r.appspot.com",
