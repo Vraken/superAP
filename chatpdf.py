@@ -41,52 +41,56 @@ def getSourceInfoFromLabel(label) -> sourceInfo:
 def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
 
-    with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
-        response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
-                                headers={
-                                    "authority": "reederproduction.uk.r.appspot.com",
-                                    "method": "POST",
-                                    "path": "/querycollection",
-                                    "scheme": "https",
-                                    "accept": "application/json, text/plain, */*",
-                                    "accept-encoding": "gzip, deflate, br",
-                                    "accept-language": "fr-FR,fr;q=0.7",
-                                    "origin": "https://reeder.ai",
-                                    "referer": "https://reeder.ai/",
-                                    "sec-fetch-dest": "empty",
-                                    "sec-fetch-mode": "cors",
-                                    "sec-fetch-site": "cross-site",
-                                    "sec-gpc": "1"
-                                },
-                                json={
-                                    "collectionuuid": str(sourceInfo.refId),
-                                    "question": question
-                                }
-                                )
-        # st.success('Prêt!')
-    # Afficher la réponse
-    if response.status_code == 200:
-        answer = response.json()
-        # st.markdown("---")
-        # st.subheader("Source : "+sourceInfo)
-        completeAnswer = answer['data']['answer']
-
-        with st.chat_message(sourceInfo.label, sourceInfo.avatar):
-            st.markdown(f"**{sourceInfo.label}**")
-            st.write(completeAnswer)
-
-        st.sidebar.subheader(sourceInfo.label)
-        st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
-        for i in range(min(len(answer['data']['sources']), 3)):
-            source = answer['data']['sources'][i]
-            with st.sidebar.expander("Page " + str(source['page_number'])):
-                st.write(source['raw_chunk'])
-            # st.sidebar.write(f"{source['raw_chunk']}")
-            # st.sidebar.markdown(f"_Page {str(source['page_number'])}_")
-
-    else:
-        st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
-        print(response)
+    avatar = sourceInfo.avatar
+    with st.chat_message(sourceInfo.label, avatar=str(avatar)):
+        st.write("haha")
+    # with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
+    #     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
+    #                             headers={
+    #                                 "authority": "reederproduction.uk.r.appspot.com",
+    #                                 "method": "POST",
+    #                                 "path": "/querycollection",
+    #                                 "scheme": "https",
+    #                                 "accept": "application/json, text/plain, */*",
+    #                                 "accept-encoding": "gzip, deflate, br",
+    #                                 "accept-language": "fr-FR,fr;q=0.7",
+    #                                 "origin": "https://reeder.ai",
+    #                                 "referer": "https://reeder.ai/",
+    #                                 "sec-fetch-dest": "empty",
+    #                                 "sec-fetch-mode": "cors",
+    #                                 "sec-fetch-site": "cross-site",
+    #                                 "sec-gpc": "1"
+    #                             },
+    #                             json={
+    #                                 "collectionuuid": str(sourceInfo.refId),
+    #                                 "question": question
+    #                             }
+    #                             )
+    #     # st.success('Prêt!')
+    # # Afficher la réponse
+    # if response.status_code == 200:
+    #     answer = response.json()
+    #     # st.markdown("---")
+    #     # st.subheader("Source : "+sourceInfo)
+    #     completeAnswer = answer['data']['answer']
+    #
+    #     avatar = sourceInfo.avatar
+    #     with st.chat_message(sourceInfo.label, avatar):
+    #         st.markdown(f"**{sourceInfo.label}**")
+    #         st.write(completeAnswer)
+    #
+    #     st.sidebar.subheader(sourceInfo.label)
+    #     st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
+    #     for i in range(min(len(answer['data']['sources']), 3)):
+    #         source = answer['data']['sources'][i]
+    #         with st.sidebar.expander("Page " + str(source['page_number'])):
+    #             st.write(source['raw_chunk'])
+    #         # st.sidebar.write(f"{source['raw_chunk']}")
+    #         # st.sidebar.markdown(f"_Page {str(source['page_number'])}_")
+    #
+    # else:
+    #     st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
+    #     print(response)
 
 if question:
     with st.chat_message("user"):
