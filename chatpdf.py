@@ -47,6 +47,8 @@ def askQuestion(question, sourceInfoLabel):
     print("avatar :"+ avatar)
     print("socket.gethostname(); "+socket.gethostname())
     image = Image.open(avatar)
+    st.write("socket.gethostname(); "+socket.gethostname())
+    st.write(("url" + str(st.server.port)))
 
     # Créer un objet BytesIO
     image_bytes = BytesIO()
