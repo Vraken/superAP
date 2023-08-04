@@ -43,7 +43,7 @@ def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
 
     avatar = sourceInfo.avatar
-    with st.chat_message(sourceInfo.label, avatar=Image.open(avatar)):
+    with st.chat_message(sourceInfo.label, avatar="./resources/guide_reg.png"):
         st.write("haha")
     # with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
     #     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
