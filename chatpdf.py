@@ -5,6 +5,8 @@ import requests
 from sourceInfo import sourceInfo
 import random
 from PIL import Image
+from io import BytesIO
+
 st.title("Super AP")
 
 # st.image("./resources/logoSuperAp-transformed.jpeg")
@@ -41,9 +43,20 @@ def getSourceInfoFromLabel(label) -> sourceInfo:
 
 def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
-
     avatar = sourceInfo.avatar
-    with st.chat_message(sourceInfo.label, avatar="./resources/guide_reg.png"):
+    print("avatar :"+ avatar)
+    print("socket.gethostname(); "+socket.gethostname())
+    image = Image.open(avatar)
+
+    # Créer un objet BytesIO
+    image_bytes = BytesIO()
+
+    # Enregistrer l'image dans l'objet BytesIO
+    image.save(image_bytes, format='PNG')
+
+    # Revenir au début du flux
+    image_bytes.seek(0)
+    with st.chat_message(sourceInfo.label, avatar=image_bytes):
         st.write("haha")
     # with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
     #     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
