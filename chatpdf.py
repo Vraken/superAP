@@ -1,11 +1,12 @@
+import socket
+
 import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
-
 st.title("Super AP")
-st.image("./resources/GPS.png")
-st.image("./resources/logoSuperAp-transformed.jpeg")
+
+# st.image("./resources/logoSuperAp-transformed.jpeg")
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","./resources/guide_reg.png")
 Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd","https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101","./resources/balise.png")
 GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb","https://ressources.sgdf.fr/public/download/1575/","./resources/GPS.png")
@@ -69,9 +70,8 @@ def askQuestion(question, sourceInfoLabel):
         # st.markdown("---")
         # st.subheader("Source : "+sourceInfo)
         completeAnswer = answer['data']['answer']
-        # st.write(completeAnswer)
-        # avatar = sourceInfo.avatar if sourceInfo.avatar!=0 else "📖"
-        with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
+
+        with st.chat_message(sourceInfo.label, sourceInfo.avatar):
             st.markdown(f"**{sourceInfo.label}**")
             st.write(completeAnswer)
 
