@@ -8,8 +8,7 @@ from PIL import Image
 from io import BytesIO
 
 st.title("Super AP")
-
-# st.image("./resources/logoSuperAp-transformed.jpeg")
+st.image("./resources/guide_reg.png")
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","./resources/guide_reg.png")
 Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd","https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101","./resources/balise.png")
 GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb","https://ressources.sgdf.fr/public/download/1575/","./resources/GPS.png")
@@ -46,70 +45,54 @@ def askQuestion(question, sourceInfoLabel):
     avatar = sourceInfo.avatar
     print("avatar :"+ avatar)
     print("socket.gethostname(); "+socket.gethostname())
-    image = Image.open(avatar)
-    st.write("socket.gethostname(); "+socket.gethostname())
-    st.write(("url" + str(st.server.port)))
 
-    # Créer un objet BytesIO
-    image_bytes = BytesIO()
+    with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
+        response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
+                                headers={
+                                    "authority": "reederproduction.uk.r.appspot.com",
+                                    "method": "POST",
+                                    "path": "/querycollection",
+                                    "scheme": "https",
+                                    "accept": "application/json, text/plain, */*",
+                                    "accept-encoding": "gzip, deflate, br",
+                                    "accept-language": "fr-FR,fr;q=0.7",
+                                    "origin": "https://reeder.ai",
+                                    "referer": "https://reeder.ai/",
+                                    "sec-fetch-dest": "empty",
+                                    "sec-fetch-mode": "cors",
+                                    "sec-fetch-site": "cross-site",
+                                    "sec-gpc": "1"
+                                },
+                                json={
+                                    "collectionuuid": str(sourceInfo.refId),
+                                    "question": question
+                                }
+                                )
+        # st.success('Prêt!')
+    # Afficher la réponse
+    if response.status_code == 200:
+        answer = response.json()
+        # st.markdown("---")
+        # st.subheader("Source : "+sourceInfo)
+        completeAnswer = answer['data']['answer']
 
-    # Enregistrer l'image dans l'objet BytesIO
-    image.save(image_bytes, format='PNG')
+        with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
+            st.markdown(f"**{sourceInfo.label}**")
+            st.write(completeAnswer)
 
-    # Revenir au début du flux
-    image_bytes.seek(0)
-    with st.chat_message(sourceInfo.label, avatar=image_bytes):
-        st.write("haha")
-    # with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
-    #     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
-    #                             headers={
-    #                                 "authority": "reederproduction.uk.r.appspot.com",
-    #                                 "method": "POST",
-    #                                 "path": "/querycollection",
-    #                                 "scheme": "https",
-    #                                 "accept": "application/json, text/plain, */*",
-    #                                 "accept-encoding": "gzip, deflate, br",
-    #                                 "accept-language": "fr-FR,fr;q=0.7",
-    #                                 "origin": "https://reeder.ai",
-    #                                 "referer": "https://reeder.ai/",
-    #                                 "sec-fetch-dest": "empty",
-    #                                 "sec-fetch-mode": "cors",
-    #                                 "sec-fetch-site": "cross-site",
-    #                                 "sec-gpc": "1"
-    #                             },
-    #                             json={
-    #                                 "collectionuuid": str(sourceInfo.refId),
-    #                                 "question": question
-    #                             }
-    #                             )
-    #     # st.success('Prêt!')
-    # # Afficher la réponse
-    # if response.status_code == 200:
-    #     answer = response.json()
-    #     # st.markdown("---")
-    #     # st.subheader("Source : "+sourceInfo)
-    #     completeAnswer = answer['data']['answer']
-    #
-    #     avatar = sourceInfo.avatar
-    #     with st.chat_message(sourceInfo.label, avatar):
-    #         st.markdown(f"**{sourceInfo.label}**")
-    #         st.write(completeAnswer)
-    #
-    #     st.sidebar.subheader(sourceInfo.label)
-    #     st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
-    #     for i in range(min(len(answer['data']['sources']), 3)):
-    #         source = answer['data']['sources'][i]
-    #         with st.sidebar.expander("Page " + str(source['page_number'])):
-    #             st.write(source['raw_chunk'])
-    #         # st.sidebar.write(f"{source['raw_chunk']}")
-    #         # st.sidebar.markdown(f"_Page {str(source['page_number'])}_")
-    #
-    # else:
-    #     st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
-    #     print(response)
+        st.sidebar.subheader(sourceInfo.label)
+        st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
+        for i in range(min(len(answer['data']['sources']), 3)):
+            source = answer['data']['sources'][i]
+            with st.sidebar.expander("Page " + str(source['page_number'])):
+                st.write(source['raw_chunk'])
+
+    else:
+        st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
+        print(response)
 
 if question:
-    with st.chat_message("user"):
+    with st.chat_message("user",avatar="https://img.icons8.com/?size=512&id=AZBAeQBAUxm0&format=png"):
         st.write(question)
 
     for source in sourceInfoLabel:
