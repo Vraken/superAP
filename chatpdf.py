@@ -4,9 +4,9 @@ from sourceInfo import sourceInfo
 import random
 
 st.title("Super AP")
-guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","resources/guide_reg.png")
-Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd","https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101","resources/balise.png")
-GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb","https://ressources.sgdf.fr/public/download/1575/","resources/GPS.png")
+guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","./resources/guide_reg.png")
+Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd","https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101","./resources/balise.png")
+GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb","https://ressources.sgdf.fr/public/download/1575/","./resources/GPS.png")
 pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241","https://ressources.sgdf.fr/public/download/1896/")
 
 listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm]
