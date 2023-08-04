@@ -4,8 +4,10 @@ import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
+from streamlit_extras.streaming_write import write
+import time
 
-
+# st.set_page_config(layout="wide")
 st.title("Super AP")
 
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","/resources/guide_reg.png")
@@ -34,6 +36,13 @@ session.headers = {
 }
 
 st.sidebar.title("Sources")
+def getStreamFromText(text):
+    for word in text.split():
+        yield word + " "
+        time.sleep(0.03)
+
+def slowWrite(text):
+    write(getStreamFromText(text))
 
 def getSourceInfoFromLabel(label) -> sourceInfo:
     return [sourceInfo for sourceInfo in listSourceInfo if sourceInfo.label == label][0]
@@ -41,9 +50,6 @@ def getSourceInfoFromLabel(label) -> sourceInfo:
 
 def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
-    avatar = sourceInfo.avatar
-    print("avatar :"+ avatar)
-    print("socket.gethostname(); "+socket.gethostname())
 
     with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
         response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
@@ -71,13 +77,11 @@ def askQuestion(question, sourceInfoLabel):
     # Afficher la réponse
     if response.status_code == 200:
         answer = response.json()
-        # st.markdown("---")
-        # st.subheader("Source : "+sourceInfo)
         completeAnswer = answer['data']['answer']
 
         with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
             st.markdown(f"**{sourceInfo.label}**")
-            st.write(completeAnswer)
+            slowWrite(completeAnswer)
 
         st.sidebar.subheader(sourceInfo.label)
         st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
@@ -91,7 +95,7 @@ def askQuestion(question, sourceInfoLabel):
         print(response)
 
 if question:
-    with st.chat_message("user",avatar="https://img.icons8.com/?size=512&id=AZBAeQBAUxm0&format=png"):
+    with st.chat_message("user",avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
         st.write(question)
 
     for source in sourceInfoLabel:
