@@ -18,5 +18,5 @@ class sourceInfo:
         return self.__link
 
     @property
-    def avatar(self):
+    def avatar(self)-> str:
         return self.__avatar

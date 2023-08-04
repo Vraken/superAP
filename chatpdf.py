@@ -4,6 +4,7 @@ import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
+from PIL import Image
 st.title("Super AP")
 
 # st.image("./resources/logoSuperAp-transformed.jpeg")
@@ -42,7 +43,7 @@ def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
 
     avatar = sourceInfo.avatar
-    with st.chat_message(sourceInfo.label, avatar=str(avatar)):
+    with st.chat_message(sourceInfo.label, avatar=Image.open(avatar)):
         st.write("haha")
     # with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
     #     response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
