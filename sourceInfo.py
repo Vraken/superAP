@@ -1,9 +1,11 @@
+gtResources = "https://raw.githubusercontent.com/Vraken/superAP/master/"
 class sourceInfo:
     def __init__(self, label, refId, link=0, avatar="📖"):
         self.__label = label
         self.__refId = refId
         self.__link = link
-        self.__avatar = avatar
+        if not avatar.startswith("http"):
+            self.__avatar = gtResources+"/"+avatar
 
     @property
     def label(self):
