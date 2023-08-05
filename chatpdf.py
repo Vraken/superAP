@@ -25,7 +25,7 @@ badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5",
 logger = get_logger(__name__)
 ## Début de l'appli
 
-st.title("Super AP")
+st.title("Resources-Man")
 listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell]
 listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
 listRubrique = [tagFondamentaux, tagPeda, tagReglementation]
