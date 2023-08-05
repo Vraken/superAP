@@ -1,8 +1,8 @@
-
 import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
+from streamlit.logger import get_logger
 
 ## Initialisation des objets
 # Rubriques
@@ -17,6 +17,7 @@ GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb", [tagPeda, tagFon
 pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241", [tagReglementation],
                            "https://ressources.sgdf.fr/public/download/1896/")
 
+logger = get_logger(__name__)
 ## Début de l'appli
 
 st.title("Super AP")
@@ -85,6 +86,7 @@ def getSourceInfoFromLabel(label) -> sourceInfo:
 def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
 
+    logger.info(f"Asking '{sourceInfoLabel}' question : '{question}'")
     with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
         response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
                                 headers={
