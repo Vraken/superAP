@@ -44,19 +44,15 @@ if "rubriqueState" not in st.session_state:
 
 # if rubriquesSelect:
 def rubriqueSelectChange():
-    print("rubriqueState" + str(st.session_state["rubriqueState"]))
     st.session_state.labelState = []
     for rubrique in st.session_state["rubriqueState"]:
         sourceInfoFromTag = getSourceInfoFromTag(rubrique)
-        print("sourceInfoFromTag " + str(sourceInfoFromTag))
         for sourceInfo in sourceInfoFromTag:
             if sourceInfo.label not in st.session_state.labelState:
-                print("Ajout de " + sourceInfo.label)
                 st.session_state.labelState.append(sourceInfo.label)
 
 
 def getRubriqueFromlabel(rubriqueLabel) -> tagWithColor:
-    print("rubriquelabel " + str(rubriqueLabel))
     return [rubrique for rubrique in listRubrique if rubriqueLabel == rubrique.label][0]
 
 
@@ -132,6 +128,7 @@ def askQuestion(question, sourceInfoLabel):
     if response.status_code == 200:
         answer = response.json()
         completeAnswer = answer['data']['answer']
+        logger.info(completeAnswer)
 
         with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
             st.markdown(f"**{sourceInfo.label}**")
@@ -146,7 +143,7 @@ def askQuestion(question, sourceInfoLabel):
 
     else:
         st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
-        print(response)
+        logger.error(response)
 
 
 if question:
