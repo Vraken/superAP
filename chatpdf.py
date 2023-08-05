@@ -1,24 +1,65 @@
-import socket
 
 import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
-from streamlit_extras.streaming_write import write
-import time
 
-# st.set_page_config(layout="wide")
+## Initialisation des objets
+# Rubriques
+tagPeda = "Proposition pédagogique"
+tagReglementation = "Réglementation"
+tagFondamentaux = "Fondamentaux du scoutisme"
+
+# SourceInfo
+guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d", [tagReglementation], "https://ressources.sgdf.fr/public/download/119/", "/resources/guide_reg.png")
+Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd", [tagPeda], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101", "./resources/balise.png")
+GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb", [tagPeda, tagFondamentaux], "https://ressources.sgdf.fr/public/download/1575/", "./resources/GPS.png")
+pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241", [tagReglementation],
+                           "https://ressources.sgdf.fr/public/download/1896/")
+
+## Début de l'appli
+
 st.title("Super AP")
-
-guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d","https://ressources.sgdf.fr/public/download/119/","/resources/guide_reg.png")
-Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd","https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101","./resources/balise.png")
-GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb","https://ressources.sgdf.fr/public/download/1575/","./resources/GPS.png")
-pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241","https://ressources.sgdf.fr/public/download/1896/")
 
 listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm]
 labels = [sourceInfo.label for sourceInfo in listSourceInfo]
 
-sourceInfoLabel = st.multiselect("Interlocuteurs", labels, labels)
+rubriques = [tagFondamentaux, tagPeda, tagReglementation]
+
+
+def getSourceInfoFromTag(tag) -> list:
+    return [sourceInfo for sourceInfo in listSourceInfo if tag in sourceInfo.tags]
+
+
+if "labelState" not in st.session_state:
+    st.session_state.labelState = []
+
+if "rubriqueState" not in st.session_state:
+    st.session_state["rubriqueState"] = []
+
+
+# if rubriquesSelect:
+def rubriqueSelectChange():
+    print("rubriqueState" + str(st.session_state["rubriqueState"]))
+    # st.session_state.labelState.append(guideReg.label)
+    st.session_state.labelState = []
+    for rubrique in st.session_state["rubriqueState"]:
+        sourceInfoFromTag = getSourceInfoFromTag(rubrique)
+        for sourceInfo in sourceInfoFromTag:
+            if sourceInfo.label not in st.session_state.labelState:
+                print("Ajout de " + sourceInfo.label)
+                st.session_state.labelState.append(sourceInfo.label)
+
+
+# def format_option(option):
+#     if option == 'Option 1':
+#         return f'<span style="color: red;">{option}</span>'
+#     else:
+#         return option
+
+rubriquesSelect = st.multiselect("Rubriques", rubriques, on_change=rubriqueSelectChange, key="rubriqueState")
+
+sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, st.session_state.labelState)
 
 question = st.chat_input("Poser une question")
 session = requests.Session()
@@ -36,13 +77,6 @@ session.headers = {
 }
 
 st.sidebar.title("Sources")
-def getStreamFromText(text):
-    for word in text.split():
-        yield word + " "
-        time.sleep(0.03)
-
-def slowWrite(text):
-    write(getStreamFromText(text))
 
 def getSourceInfoFromLabel(label) -> sourceInfo:
     return [sourceInfo for sourceInfo in listSourceInfo if sourceInfo.label == label][0]
@@ -81,7 +115,7 @@ def askQuestion(question, sourceInfoLabel):
 
         with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
             st.markdown(f"**{sourceInfo.label}**")
-            slowWrite(completeAnswer)
+            st.write(completeAnswer)
 
         st.sidebar.subheader(sourceInfo.label)
         st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
@@ -94,9 +128,10 @@ def askQuestion(question, sourceInfoLabel):
         st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
         print(response)
 
+
 if question:
-    with st.chat_message("user",avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
+    with st.chat_message("user", avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
         st.write(question)
 
-    for source in sourceInfoLabel:
+    for source in sourceInfoLabelSelect:
         askQuestion(question, source)
