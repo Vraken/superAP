@@ -2,13 +2,15 @@ import streamlit as st
 import requests
 from sourceInfo import sourceInfo
 import random
+from tagWithColor import tagWithColor
 from streamlit.logger import get_logger
 
 ## Initialisation des objets
 # Rubriques
-tagPeda = "Proposition pédagogique"
-tagReglementation = "Réglementation"
-tagFondamentaux = "Fondamentaux du scoutisme"
+
+tagPeda = tagWithColor("Proposition pédagogique", "🟡")
+tagReglementation = tagWithColor("Réglementation", "🔵")
+tagFondamentaux = tagWithColor("Fondamentaux du scoutisme", "🟢")
 
 # SourceInfo
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d", [tagReglementation], "https://ressources.sgdf.fr/public/download/119/", "/resources/guide_reg.png")
@@ -16,20 +18,21 @@ Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd", [tagPeda]
 GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb", [tagPeda, tagFondamentaux], "https://ressources.sgdf.fr/public/download/1575/", "./resources/GPS.png")
 pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241", [tagReglementation],
                            "https://ressources.sgdf.fr/public/download/1896/")
+ambitionEduc = sourceInfo("Ambitions éducatives", "b21e63dd-cc4b-423e-9073-f2363ebbff02", [tagPeda, tagFondamentaux], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/386",
+                          "/resources/ambitionEduc.png")
+badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5", [tagFondamentaux], "http://www.thedump.scoutscan.com/yarns00-28.pdf", "./resources/bp.jpg")
 
 logger = get_logger(__name__)
 ## Début de l'appli
 
 st.title("Super AP")
-
-listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm]
-labels = [sourceInfo.label for sourceInfo in listSourceInfo]
-
-rubriques = [tagFondamentaux, tagPeda, tagReglementation]
-
+listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell]
+listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
+listRubrique = [tagFondamentaux, tagPeda, tagReglementation]
+listRubriqueLabel = [rubrique.label for rubrique in listRubrique]
 
 def getSourceInfoFromTag(tag) -> list:
-    return [sourceInfo for sourceInfo in listSourceInfo if tag in sourceInfo.tags]
+    return [sourceInfo for sourceInfo in listSourceInfo if tag in [tag.label for tag in sourceInfo.tags]]
 
 
 if "labelState" not in st.session_state:
@@ -42,25 +45,43 @@ if "rubriqueState" not in st.session_state:
 # if rubriquesSelect:
 def rubriqueSelectChange():
     print("rubriqueState" + str(st.session_state["rubriqueState"]))
-    # st.session_state.labelState.append(guideReg.label)
     st.session_state.labelState = []
     for rubrique in st.session_state["rubriqueState"]:
         sourceInfoFromTag = getSourceInfoFromTag(rubrique)
+        print("sourceInfoFromTag " + str(sourceInfoFromTag))
         for sourceInfo in sourceInfoFromTag:
             if sourceInfo.label not in st.session_state.labelState:
                 print("Ajout de " + sourceInfo.label)
                 st.session_state.labelState.append(sourceInfo.label)
 
 
-# def format_option(option):
-#     if option == 'Option 1':
-#         return f'<span style="color: red;">{option}</span>'
-#     else:
-#         return option
+def getRubriqueFromlabel(rubriqueLabel) -> tagWithColor:
+    print("rubriquelabel " + str(rubriqueLabel))
+    return [rubrique for rubrique in listRubrique if rubriqueLabel == rubrique.label][0]
 
-rubriquesSelect = st.multiselect("Rubriques", rubriques, on_change=rubriqueSelectChange, key="rubriqueState")
 
-sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, st.session_state.labelState)
+def formatRubrique(rubriqueLabel):
+    rubrique = getRubriqueFromlabel(rubriqueLabel)
+    # return f'{rubrique.color} #{rubriqueLabel}'
+    return f'#{rubriqueLabel}'
+
+
+def getSourceInfoFromLabel(label) -> sourceInfo:
+    return [sourceInfo for sourceInfo in listSourceInfo if sourceInfo.label == label][0]
+
+
+def formatSourceInfo(sourceInfoLabel):
+    sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
+    sourceInfoLabelFormatted = ""
+    for rubrique in sourceInfo.tags:
+        sourceInfoLabelFormatted += f'{rubrique.color}'
+    sourceInfoLabelFormatted += f" {sourceInfo.label}"
+    return sourceInfoLabelFormatted
+
+
+rubriquesSelect = st.multiselect("Rubriques", listRubriqueLabel, on_change=rubriqueSelectChange, key="rubriqueState", format_func=formatRubrique, placeholder="Choisir une rubrique")
+
+sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, st.session_state.labelState, placeholder="Choisir un interlocuteur")
 
 question = st.chat_input("Poser une question")
 session = requests.Session()
@@ -78,9 +99,6 @@ session.headers = {
 }
 
 st.sidebar.title("Sources")
-
-def getSourceInfoFromLabel(label) -> sourceInfo:
-    return [sourceInfo for sourceInfo in listSourceInfo if sourceInfo.label == label][0]
 
 
 def askQuestion(question, sourceInfoLabel):
