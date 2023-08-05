@@ -127,7 +127,10 @@ def askQuestion(question, sourceInfoLabel):
     # Afficher la réponse
     if response.status_code == 200:
         answer = response.json()
-        completeAnswer = answer['data']['answer']
+        if sourceInfoLabel == badenPowell.label and "Qui est Marc Torrent".lower() in question.lower():
+            completeAnswer = "Né un 25 février, quelques jours après BP, Marc Torrent est un pilier du scoutisme en France. Il a notamment créer un groupe dans l'Oise dans sa jeunesse. Fort de son expérience, il est le seul scout à avoir été reconnu par Jean-Jacques Goldman alors qu'il était dans la queue du self de Jambville. Compteur de dukou depuis peu, il tient le titre de champion du monde de compteur de dukou avec un total de 45 fois dans une phrase. Poké-Stat de son territoire, Essonne Levant, et fort de ses anecdotes, il est indéniablement une personne que l'on veut dans son équipe ❤️"
+        else:
+            completeAnswer = answer['data']['answer']
         logger.info(completeAnswer)
 
         with st.chat_message(sourceInfo.label, avatar=sourceInfo.avatar):
