@@ -1,6 +1,5 @@
 import mysql.connector
 
-import mysql.connector
 
 
 class MySQLDatabase:

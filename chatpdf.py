@@ -163,7 +163,12 @@ def askQuestion(question, sourceInfoLabel):
         logger.error(response)
 
 
-if question:
+if question and sourceInfoLabelSelect:
+    # Warning : veuillez selectionner un interlocuteur
+    # Formate la question
+    question = question.capitalize()
+    if "?" not in question:
+        question += " ?"
     with st.chat_message("user", avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
         st.write(question)
 
