@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+
+from baseConnection import MySQLDatabase
 from sourceInfo import sourceInfo
 import random
 from tagWithColor import tagWithColor
@@ -22,7 +24,14 @@ ambitionEduc = sourceInfo("Ambitions éducatives", "b21e63dd-cc4b-423e-9073-f236
                           "/resources/ambitionEduc.png")
 badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5", [tagFondamentaux], "http://www.thedump.scoutscan.com/yarns00-28.pdf", "./resources/bp.jpg")
 
+# Logger
 logger = get_logger(__name__)
+
+# BDD
+db = MySQLDatabase(host="mysql-superap.alwaysdata.net", user=st.secrets["DB_USERNAME"], password=st.secrets["DB_PASSWORD"], database="superap_bdd")
+db.connect()
+
+
 ## Début de l'appli
 
 st.title("Resources-Man")
@@ -94,12 +103,17 @@ session.headers = {
     "User-Agent": random.choice(user_agent_list)
 }
 
-st.sidebar.title("Sources")
+st.sidebar.header("Top 5 des questions")
+top_questions = db.get_top_questions()
+for questionTop, total_calls in top_questions:
+    st.sidebar.markdown(f"* {questionTop} ({total_calls})")
+
+st.sidebar.header("Sources")
 
 
 def askQuestion(question, sourceInfoLabel):
     sourceInfo = getSourceInfoFromLabel(sourceInfoLabel)
-
+    db.increment_or_insert(question, sourceInfo.label)
     logger.info(f"Asking '{sourceInfoLabel}' question : '{question}'")
     with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
         response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
@@ -155,3 +169,5 @@ if question:
 
     for source in sourceInfoLabelSelect:
         askQuestion(question, source)
+
+db.disconnect()
