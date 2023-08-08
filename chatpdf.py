@@ -47,10 +47,11 @@ page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
 background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background.svg");
-background-size: 90%;
-background-position: top left;
+background-size: 25%;
+background-position: bottom right;
 background-repeat: no-repeat;
 background-attachment: local;
+background-color:rgba(0, 0, 0, 0);
 }}
 
 
