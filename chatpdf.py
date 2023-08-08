@@ -46,7 +46,7 @@ st.title("Resources-Man")
 page_bg_img = f"""
 <style>
 [data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background.png");
+background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background.svg");
 background-size: 90%;
 background-position: top left;
 background-repeat: no-repeat;
@@ -63,7 +63,6 @@ background: rgba(0,0,0,0);
 """
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
-img = get_img_as_base64("resources/logoSuperAp.png")
 st.markdown(
     """
     <style>
