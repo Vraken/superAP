@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import base64
 
 from baseConnection import MySQLDatabase
 from sourceInfo import sourceInfo
@@ -23,6 +24,7 @@ pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la resta
 ambitionEduc = sourceInfo("Ambitions éducatives", "b21e63dd-cc4b-423e-9073-f2363ebbff02", [tagPeda, tagFondamentaux], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/386",
                           "/resources/ambitionEduc.png")
 badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5", [tagFondamentaux], "http://www.thedump.scoutscan.com/yarns00-28.pdf", "./resources/bp.jpg")
+sdjes = sourceInfo("SDJES", "5135358c-85f7-44e3-9933-9b0397343885", [tagReglementation], "https://acm-cvl.fr/memento/")
 
 # Logger
 logger = get_logger(__name__)
@@ -32,10 +34,64 @@ db = MySQLDatabase(host="mysql-superap.alwaysdata.net", user=st.secrets["DB_USER
 db.connect()
 
 
-## Début de l'appli
+def get_img_as_base64(file):
+    with open(file, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
+## Début de l'appli
+st.set_page_config(page_title="Ressources-Man", page_icon="📖")
 st.title("Resources-Man")
-listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell]
+
+page_bg_img = f"""
+<style>
+[data-testid="stAppViewContainer"] > .main {{
+background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background.png");
+background-size: 90%;
+background-position: top left;
+background-repeat: no-repeat;
+background-attachment: local;
+}}
+
+
+
+[data-testid="stHeader"] {{
+background: rgba(0,0,0,0);
+}}
+
+</style>
+"""
+
+st.markdown(page_bg_img, unsafe_allow_html=True)
+img = get_img_as_base64("resources/logoSuperAp.png")
+st.markdown(
+    """
+    <style>
+    button[kind="primary"] {
+        background: none!important;
+        border: none;
+        padding: 0!important;
+        color: black !important;
+        text-decoration: none;
+        cursor: pointer;
+        border: none !important;
+        text-align: left;
+    }
+    button[kind="primary"]:hover {
+        text-decoration: none;
+        color: black !important;
+    }
+    button[kind="primary"]:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        color: black !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes]
 listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
 listRubrique = [tagFondamentaux, tagPeda, tagReglementation]
 listRubriqueLabel = [rubrique.label for rubrique in listRubrique]
@@ -49,6 +105,9 @@ if "labelState" not in st.session_state:
 
 if "rubriqueState" not in st.session_state:
     st.session_state["rubriqueState"] = []
+
+if "questionState" not in st.session_state:
+    st.session_state["questionState"] = ""
 
 
 # if rubriquesSelect:
@@ -72,6 +131,7 @@ def formatRubrique(rubriqueLabel):
 
 
 def getSourceInfoFromLabel(label) -> sourceInfo:
+    print("getSourceInfoFromLabel " + str(label))
     return [sourceInfo for sourceInfo in listSourceInfo if sourceInfo.label == label][0]
 
 
@@ -103,12 +163,9 @@ session.headers = {
     "User-Agent": random.choice(user_agent_list)
 }
 
-st.sidebar.header("Top 5 des questions")
-top_questions = db.get_top_questions()
-for questionTop, total_calls in top_questions:
-    st.sidebar.markdown(f"* {questionTop} ({total_calls})")
-
-st.sidebar.header("Sources")
+top5Container = st.sidebar.container()
+sourceContainer = st.sidebar.container()
+sourceContainer.header("Sources")
 
 
 def askQuestion(question, sourceInfoLabel):
@@ -151,11 +208,11 @@ def askQuestion(question, sourceInfoLabel):
             st.markdown(f"**{sourceInfo.label}**")
             st.write(completeAnswer)
 
-        st.sidebar.subheader(sourceInfo.label)
-        st.sidebar.write(f"[Télécharger]({sourceInfo.link})")
+        sourceContainer.subheader(sourceInfo.label)
+        sourceContainer.write(f"[Télécharger]({sourceInfo.link})")
         for i in range(min(len(answer['data']['sources']), 3)):
             source = answer['data']['sources'][i]
-            with st.sidebar.expander("Page " + str(source['page_number'])):
+            with sourceContainer.expander("Page " + str(source['page_number'])):
                 st.write(source['raw_chunk'])
 
     else:
@@ -163,16 +220,29 @@ def askQuestion(question, sourceInfoLabel):
         logger.error(response)
 
 
-if question and sourceInfoLabelSelect:
-    # Warning : veuillez selectionner un interlocuteur
-    # Formate la question
-    question = question.capitalize()
-    if "?" not in question:
-        question += " ?"
-    with st.chat_message("user", avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
-        st.write(question)
+def askQuestions(question):
+    if not sourceInfoLabelSelect:
+        st.warning("Selectionnez au moins un interlocuteur")
+    else:
+        # Formate la question
+        question = question.capitalize()
+        if "?" not in question:
+            question += " ?"
+        with st.chat_message("user", avatar="https://img.icons8.com/?size=512&id=iLOt-63q7jv2&format=png"):
+            st.write(question)
+        for source in sourceInfoLabelSelect:
+            askQuestion(question, source)
 
-    for source in sourceInfoLabelSelect:
-        askQuestion(question, source)
+
+if question:
+    # Warning : veuillez selectionner un interlocuteur
+    askQuestions(question)
+
+top5Container.header("Top 5 des questions")
+top_questions = db.get_top_questions()
+for questionTop, total_calls in top_questions:
+    if top5Container.button(f"{questionTop} ({total_calls})", type="primary") and sourceInfoLabelSelect:
+        askQuestions(questionTop)
+
 
 db.disconnect()
