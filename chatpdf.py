@@ -8,6 +8,19 @@ import random
 from tagWithColor import tagWithColor
 from streamlit.logger import get_logger
 
+st.set_page_config(page_title="Ressources-Man", page_icon="📖")
+
+hide_default_format = """
+       <style>
+        #MainMenu {visibility: hidden; }
+       footer {visibility: visible;
+        position:fixed;
+       bottom:0;}
+        }
+       </style>
+       """
+st.markdown(hide_default_format, unsafe_allow_html=True)
+
 ## Initialisation des objets
 # Rubriques
 
@@ -28,7 +41,7 @@ badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5",
 sdjes = sourceInfo("SDJES", "5135358c-85f7-44e3-9933-9b0397343885", [tagReglementation], "https://acm-cvl.fr/memento/")
 chenalMarin = sourceInfo("Chenal marin", "66cd2e0e-5009-43be-9ccd-67ef4cfa9546", [tagReglementation, tagPeda], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/144",
                          "./resources/gouvernail-01.png")
-ficheSante = sourceInfo("Fiches santé", "c8d66dbd-3a9c-4506-b955-566c19883bdf", [tagSante], "./resources/malette_sante.png")
+ficheSante = sourceInfo("Fiches santé", "c8d66dbd-3a9c-4506-b955-566c19883bdf", [tagSante], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/125", "./resources/malette_sante.png")
 
 # Logger
 logger = get_logger(__name__)
@@ -43,8 +56,9 @@ def get_img_as_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
+
 ## Début de l'appli
-st.set_page_config(page_title="Ressources-Man", page_icon="📖")
+
 st.title("Resources-Man")
 
 page_bg_img = f"""
@@ -167,7 +181,7 @@ session.headers = {
     "User-Agent": random.choice(user_agent_list)
 }
 
-top5Container = st.sidebar.container()
+# top5Container = st.sidebar.container()
 sourceContainer = st.sidebar.container()
 sourceContainer.header("Sources")
 
@@ -242,11 +256,59 @@ if question:
     # Warning : veuillez selectionner un interlocuteur
     askQuestions(question)
 
-top5Container.header("Top 5 des questions")
-top_questions = db.get_top_questions()
-for questionTop, total_calls in top_questions:
-    if top5Container.button(f"{questionTop} ({total_calls})", type="primary") and sourceInfoLabelSelect:
-        askQuestions(questionTop)
+# top5Container.header("Top 5 des questions")
+# top_questions = db.get_top_questions()
+# for questionTop, total_calls in top_questions:
+#     if top5Container.button(f"{questionTop} ({total_calls})", type="primary") and sourceInfoLabelSelect:
+#         askQuestions(questionTop)
 
+ft = """
+<style>
+a:link , a:visited{
+color: #808080;  /* theme's text color hex code at 75 percent brightness*/
+background-color: transparent;
+text-decoration: none;
+}
+
+a:hover,  a:active {
+color: #808080; /* theme's primary color*/
+background-color: transparent;
+text-decoration: underline;
+}
+
+#page-container {
+  position: relative;
+  min-height: 10vh;
+}
+
+footer{
+    visibility:hidden;
+}
+
+.footer {
+position: fixed !important;
+left: 0;
+top:230px;
+bottom: 0;
+width: 100%;
+background-color: transparent;
+color: #808080; /* theme's text color hex code at 50 percent brightness*/
+text-align: left; /* you can replace 'left' with 'center' or 'right' if you want*/
+}
+</style>
+
+<div id="page-container">
+
+<footer>
+<p style='font-size: 0.875em;'>Des questions, remarques, suggestions ?
+<br/>
+<a href="mailto:superap@alwaysdata.net">superap@alwaysdata.net</a>
+</p>
+</footer>
+
+</div>
+"""
+st.sidebar.write(ft, unsafe_allow_html=True)
+#
 
 db.disconnect()
