@@ -284,7 +284,9 @@ text-decoration: underline;
 footer{
     visibility:hidden;
 }
-
+.viewerBadge_link__qRIco{
+    visibility:hidden;
+}
 .footer {
 position: fixed !important;
 left: 0;
