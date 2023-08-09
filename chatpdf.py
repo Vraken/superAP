@@ -14,6 +14,7 @@ from streamlit.logger import get_logger
 tagPeda = tagWithColor("Proposition pédagogique", "🟡")
 tagReglementation = tagWithColor("Réglementation", "🔵")
 tagFondamentaux = tagWithColor("Fondamentaux du scoutisme", "🟢")
+tagSante = tagWithColor("Santé", "🟢")
 
 # SourceInfo
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d", [tagReglementation], "https://ressources.sgdf.fr/public/download/119/", "/resources/guide_reg.png")
@@ -25,6 +26,9 @@ ambitionEduc = sourceInfo("Ambitions éducatives", "b21e63dd-cc4b-423e-9073-f236
                           "/resources/ambitionEduc.png")
 badenPowell = sourceInfo("Baden Powell", "1acca570-4822-4460-92b5-b4d1aa11e7a5", [tagFondamentaux], "http://www.thedump.scoutscan.com/yarns00-28.pdf", "./resources/bp.jpg")
 sdjes = sourceInfo("SDJES", "5135358c-85f7-44e3-9933-9b0397343885", [tagReglementation], "https://acm-cvl.fr/memento/")
+chenalMarin = sourceInfo("Chenal marin", "66cd2e0e-5009-43be-9ccd-67ef4cfa9546", [tagReglementation, tagPeda], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/144",
+                         "./resources/gouvernail-01.png")
+ficheSante = sourceInfo("Fiches santé", "c8d66dbd-3a9c-4506-b955-566c19883bdf", [tagSante], "./resources/malette_sante.png")
 
 # Logger
 logger = get_logger(__name__)
@@ -91,9 +95,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes]
+listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes, chenalMarin, ficheSante]
 listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
-listRubrique = [tagFondamentaux, tagPeda, tagReglementation]
+listRubrique = [tagFondamentaux, tagPeda, tagReglementation, tagSante]
 listRubriqueLabel = [rubrique.label for rubrique in listRubrique]
 
 def getSourceInfoFromTag(tag) -> list:
