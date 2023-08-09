@@ -302,7 +302,7 @@ text-align: left; /* you can replace 'left' with 'center' or 'right' if you want
 <footer>
 <p style='font-size: 0.875em;'>Des questions, remarques, suggestions ?
 <br/>
-<a href="mailto:superap@alwaysdata.net">superap@alwaysdata.net</a>
+ <a href="mailto:superap@alwaysdata.net">superap@alwaysdata.net <img src="https://img.icons8.com/?size=512&id=jfsBIWKX4Re4&format=png" height="15" margin="1px"></a>
 </p>
 </footer>
 
