@@ -66,7 +66,7 @@ page_bg_img = f"""
 [data-testid="stAppViewContainer"] > .main {{
 background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background_opaque.png");
 background-size: 50%;
-background-position: center center;
+background-position: top right;
 background-repeat: no-repeat;
 background-attachment: local;
 background-color:rgba(0, 0, 0, 0);
