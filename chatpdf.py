@@ -1,26 +1,15 @@
 import streamlit as st
-import requests
 import base64
 
+import reederAiApi
 from baseConnection import MySQLDatabase
 from sourceInfo import sourceInfo
-import random
+
 from tagWithColor import tagWithColor
 from streamlit.logger import get_logger
+import dynaStyle
 
-st.set_page_config(page_title="Ressources-Man", page_icon="📖")
-
-hide_default_format = """
-       <style>
-        #MainMenu {visibility: hidden; }
-       footer {visibility: visible;
-        position:fixed;
-       bottom:0;}
-        }
-       </style>
-       """
-st.markdown(hide_default_format, unsafe_allow_html=True)
-
+dynaStyle.setStyle();
 ## Initialisation des objets
 # Rubriques
 
@@ -61,54 +50,6 @@ def get_img_as_base64(file):
 
 st.title("Resources-Man")
 
-page_bg_img = f"""
-<style>
-[data-testid="stAppViewContainer"] > .main {{
-background-image: url("https://raw.githubusercontent.com/Vraken/superAP/master/resources/background_opaque.png");
-background-size: 50%;
-background-position: top right;
-background-repeat: no-repeat;
-background-attachment: local;
-background-color:rgba(0, 0, 0, 0);
-}}
-
-
-
-[data-testid="stHeader"] {{
-background: rgba(0,0,0,0);
-}}
-
-</style>
-"""
-
-st.markdown(page_bg_img, unsafe_allow_html=True)
-st.markdown(
-    """
-    <style>
-    button[kind="primary"] {
-        background: none!important;
-        border: none;
-        padding: 0!important;
-        color: black !important;
-        text-decoration: none;
-        cursor: pointer;
-        border: none !important;
-        text-align: left;
-    }
-    button[kind="primary"]:hover {
-        text-decoration: none;
-        color: black !important;
-    }
-    button[kind="primary"]:focus {
-        outline: none !important;
-        box-shadow: none !important;
-        color: black !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
 listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes, chenalMarin, ficheSante]
 listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
 listRubrique = [tagFondamentaux, tagPeda, tagReglementation, tagSante]
@@ -116,7 +57,6 @@ listRubriqueLabel = [rubrique.label for rubrique in listRubrique]
 
 def getSourceInfoFromTag(tag) -> list:
     return [sourceInfo for sourceInfo in listSourceInfo if tag in [tag.label for tag in sourceInfo.tags]]
-
 
 if "labelState" not in st.session_state:
     st.session_state.labelState = []
@@ -167,19 +107,7 @@ rubriquesSelect = st.multiselect("Rubriques", listRubriqueLabel, on_change=rubri
 sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, st.session_state.labelState, placeholder="Choisir un interlocuteur")
 
 question = st.chat_input("Poser une question")
-session = requests.Session()
 
-user_agent_list = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Firefox/77.0',
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
-]
-
-session.headers = {
-    "User-Agent": random.choice(user_agent_list)
-}
 
 # top5Container = st.sidebar.container()
 sourceContainer = st.sidebar.container()
@@ -191,27 +119,7 @@ def askQuestion(question, sourceInfoLabel):
     db.increment_or_insert(question, sourceInfo.label)
     logger.info(f"Asking '{sourceInfoLabel}' question : '{question}'")
     with st.spinner(text=sourceInfo.label + " est en train d'écrire ..."):
-        response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
-                                headers={
-                                    "authority": "reederproduction.uk.r.appspot.com",
-                                    "method": "POST",
-                                    "path": "/querycollection",
-                                    "scheme": "https",
-                                    "accept": "application/json, text/plain, */*",
-                                    "accept-encoding": "gzip, deflate, br",
-                                    "accept-language": "fr-FR,fr;q=0.7",
-                                    "origin": "https://reeder.ai",
-                                    "referer": "https://reeder.ai/",
-                                    "sec-fetch-dest": "empty",
-                                    "sec-fetch-mode": "cors",
-                                    "sec-fetch-site": "cross-site",
-                                    "sec-gpc": "1"
-                                },
-                                json={
-                                    "collectionuuid": str(sourceInfo.refId),
-                                    "question": question
-                                }
-                                )
+        response = reederAiApi.askDocument(docId=sourceInfo.refId, question=question)
         # st.success('Prêt!')
     # Afficher la réponse
     if response.status_code == 200:
@@ -262,55 +170,8 @@ if question:
 #     if top5Container.button(f"{questionTop} ({total_calls})", type="primary") and sourceInfoLabelSelect:
 #         askQuestions(questionTop)
 
-ft = """
-<style>
-a:link , a:visited{
-color: #808080;  /* theme's text color hex code at 75 percent brightness*/
-background-color: transparent;
-text-decoration: none;
-}
 
-a:hover,  a:active {
-color: #808080; /* theme's primary color*/
-background-color: transparent;
-text-decoration: underline;
-}
-
-#page-container {
-  position: relative;
-  min-height: 10vh;
-}
-
-footer{
-    visibility:hidden;
-}
-.viewerBadge_link__qRIco{
-    visibility:hidden;
-}
-.footer {
-position: fixed !important;
-left: 0;
-top:230px;
-bottom: 0;
-width: 100%;
-background-color: transparent;
-color: #808080; /* theme's text color hex code at 50 percent brightness*/
-text-align: left; /* you can replace 'left' with 'center' or 'right' if you want*/
-}
-</style>
-
-<div id="page-container">
-
-<footer>
-<p style='font-size: 0.875em;'>Des questions, remarques, suggestions ?
-<br/>
- <a href="mailto:superap@alwaysdata.net">superap@alwaysdata.net <img src="https://img.icons8.com/?size=512&id=jfsBIWKX4Re4&format=png" height="15" margin="1px"></a>
-</p>
-</footer>
-
-</div>
-"""
-st.sidebar.write(ft, unsafe_allow_html=True)
+st.sidebar.write(dynaStyle.getFooter(), unsafe_allow_html=True)
 #
 
 db.disconnect()
