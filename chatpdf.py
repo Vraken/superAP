@@ -22,7 +22,7 @@ tagSante = tagWithColor("Santé", "🟢")
 guideReg = sourceInfo("Guide réglementaire du scoutisme", "d4d373cf-4da4-4420-9038-9956e2cac86d", [tagReglementation], "https://ressources.sgdf.fr/public/download/119/", "/resources/guide_reg.png")
 Balise = sourceInfo("Balises", "10c283bf-524c-4553-9681-83934b8c9cbd", [tagPeda], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/1101", "./resources/balise.png")
 GPS = sourceInfo("GPS", "0d7d338b-4415-4772-99f2-31a98326f5bb", [tagPeda, tagFondamentaux], "https://ressources.sgdf.fr/public/download/1575/", "./resources/GPS.png")
-pdfHygieneAcm = sourceInfo("Guide des bonnes pratiques de l'hygiène de la restauration en ACM", "61488718-29cc-4cd7-a9e7-89465dce0241", [tagReglementation],
+pdfHygieneAcm = sourceInfo("Guide des pratiques d’hygiène de restauration en plein air", "61488718-29cc-4cd7-a9e7-89465dce0241", [tagReglementation],
                            "https://ressources.sgdf.fr/public/download/1896/")
 ambitionEduc = sourceInfo("Ambitions éducatives", "b21e63dd-cc4b-423e-9073-f2363ebbff02", [tagPeda, tagFondamentaux], "https://chefscadres.sgdf.fr/ressources/#/explore/tag/386",
                           "/resources/ambitionEduc.png")
@@ -48,11 +48,11 @@ def get_img_as_base64(file):
 
 ## Début de l'appli
 
-st.title("Resources-Man")
+st.title("Ressources-Man")
 
-listSourceInfo = [guideReg, Balise, GPS, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes, chenalMarin, ficheSante]
+listSourceInfo = [guideReg, GPS, Balise, pdfHygieneAcm, ambitionEduc, badenPowell, sdjes, chenalMarin, ficheSante]
 listSourceInfoLabel = [sourceInfo.label for sourceInfo in listSourceInfo]
-listRubrique = [tagFondamentaux, tagPeda, tagReglementation, tagSante]
+listRubrique = [tagReglementation, tagPeda, tagFondamentaux, tagSante]
 listRubriqueLabel = [rubrique.label for rubrique in listRubrique]
 
 def getSourceInfoFromTag(tag) -> list:
@@ -104,7 +104,7 @@ def formatSourceInfo(sourceInfoLabel):
 
 rubriquesSelect = st.multiselect("Rubriques", listRubriqueLabel, on_change=rubriqueSelectChange, key="rubriqueState", format_func=formatRubrique, placeholder="Choisir une rubrique")
 
-sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, st.session_state.labelState, placeholder="Choisir un interlocuteur")
+sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, placeholder="Choisir un interlocuteur")
 
 question = st.chat_input("Poser une question")
 
