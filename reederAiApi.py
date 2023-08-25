@@ -15,7 +15,7 @@ def askDocument(docId, question):
     session.headers = {
         "User-Agent": random.choice(user_agent_list)
     }
-    response = session.post("https://reederproduction.uk.r.appspot.com/querycollection",
+    response = session.post("https://ntw9hghn63.us-east-1.awsapprunner.com/querycollectionstreaming",
                             headers={
                                 "authority": "reederproduction.uk.r.appspot.com",
                                 "method": "POST",
