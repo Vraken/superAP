@@ -8,6 +8,7 @@ from sourceInfo import sourceInfo
 from tagWithColor import tagWithColor
 from streamlit.logger import get_logger
 import dynaStyle
+import re
 
 dynaStyle.setStyle();
 ## Initialisation des objets
@@ -141,10 +142,15 @@ def askQuestion(question, sourceInfoLabel):
 
         sourceContainer.subheader(sourceInfo.label)
         sourceContainer.write(f"[Télécharger]({sourceInfo.link})")
-        # for i in range(min(len(full_text[0]), 3)):
-        #     source = full_text[i + 1]
-        #     with sourceContainer.expander("Page " + str(source['page_number'])):
-        #         st.write(source['raw_chunk'])
+
+        for i in range(min(len(full_text[0]), 3)):
+            regex_pattern = r'sourcepage:(\d+)'
+            match = re.search(regex_pattern, full_text[i])
+            if match:
+                page_number = match.group(1)
+                with sourceContainer.expander("Page " + page_number):
+                    st.write(full_text[i].split("sourcepage")[0])
+
 
     else:
         st.error("Une erreur s'est produite lors de l'appel à l'API Reeder.")
