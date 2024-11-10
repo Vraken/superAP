@@ -103,9 +103,9 @@ def formatSourceInfo(sourceInfoLabel):
     return sourceInfoLabelFormatted
 
 
-rubriquesSelect = st.multiselect("Rubriques", listRubriqueLabel, on_change=rubriqueSelectChange, key="rubriqueState", format_func=formatRubrique, placeholder="Choisir une rubrique")
+rubriquesSelect = st.pills("Rubriques", listRubriqueLabel, on_change=rubriqueSelectChange, key="rubriqueState", format_func=formatRubrique, selection_mode="multi")
 
-sourceInfoLabelSelect = st.multiselect("Interlocuteurs", st.session_state.labelState, placeholder="Choisir un interlocuteur")
+sourceInfoLabelSelect = st.pills("Interlocuteurs", st.session_state.labelState, selection_mode="multi")
 
 question = st.chat_input("Poser une question")
 
