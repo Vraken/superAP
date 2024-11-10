@@ -37,7 +37,7 @@ ficheSante = sourceInfo("Fiches santé", "c8d66dbd-3a9c-4506-b955-566c19883bdf",
 logger = get_logger(__name__)
 
 # BDD
-db = MySQLDatabase(host="mysql-superap.alwaysdata.net", user=st.secrets["DB_USERNAME"], password=st.secrets["DB_PASSWORD"], database="superap_bdd")
+db = MySQLDatabase(host="mysql-superap.alwaysdata.net", user=st.secrets["DB_USERNAME"], password=st.secrets["DB_PASSWORD"], database="superap_data")
 db.connect()
 
 
